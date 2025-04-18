@@ -1,0 +1,22 @@
+name: Grype Container Scan
+
+on:
+  workflow_dispatch:
+
+jobs:
+  grype_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Grype
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Build Docker image
+        run: docker build -t insecure-image:latest .
+
+      - name: Scan Docker image with Grype
+        run: grype insecure-image:latest --fail-on critical
